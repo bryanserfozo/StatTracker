@@ -2,6 +2,7 @@ package com.revature.controllers;
 
 import com.revature.models.User;
 import com.revature.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,12 @@ public class UserController {
 
     // TODO LOGIN
     @PostMapping("/login") // http://localhost:8080/users/login
-    public ResponseEntity<User> loginHandler(@RequestBody User user, HttpSession session){
+    public ResponseEntity<User> loginHandler(@RequestBody User user, HttpServletRequest request){
+        HttpSession session = request.getSession();
+        if (!session.isNew()) {
+            session.invalidate();
+        }
+
         // Now I want to validate that the user has provided the correct credentials
 
         User returnedUser = userService.login(user.getUsername(), user.getPassword());
@@ -50,6 +56,7 @@ public class UserController {
             // return new ResponseEntity(HttpStatus.BAD_REQUEST)
         }
 
+        session = request.getSession(true);
         // We'll store some information inside of the session to hold it for later
         session.setAttribute("username", returnedUser.getUsername());
         session.setAttribute("userId", returnedUser.getUserId());
@@ -58,6 +65,28 @@ public class UserController {
 
         // OTHERWISE
         return ResponseEntity.ok(returnedUser);
+    }
+
+    @PostMapping("/register") // http://localhost:8080/users/login
+    public ResponseEntity<User> registerHandler(@RequestBody User user, HttpServletRequest request){
+        // Now I want to validate that the user has provided the correct credentials
+
+        HttpSession session = request.getSession();
+        if (!session.isNew()) {
+            session.invalidate();
+        }
+
+        User returnedUser = userService.register(user);
+
+        session = request.getSession(true);
+        // We'll store some information inside of the session to hold it for later
+        session.setAttribute("username", returnedUser.getUsername());
+        session.setAttribute("userId", returnedUser.getUserId());
+        session.setAttribute("role", returnedUser.getRole());
+
+
+        // OTHERWISE
+        return ResponseEntity.status(201).body(returnedUser);
     }
 
     // TODO LOGOUT

@@ -44,6 +44,10 @@ public class UserService {
         return null;
     }
 
+    public User register(User user){
+        return userDAO.save(user);
+    }
+
     // TODO ADD PLAYER TO USER'S FAVORITES
     public User addPlayerToFavorites(String username, int playerId){
         // Look up the user
