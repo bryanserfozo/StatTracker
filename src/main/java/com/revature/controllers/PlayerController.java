@@ -13,7 +13,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("players")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:5173",
+        "http://stat-tracker-test-bjs.s3-website-us-east-1.amazonaws.com"}, allowCredentials = "true")
 public class PlayerController {
 
     private final PlayerService playerService;
